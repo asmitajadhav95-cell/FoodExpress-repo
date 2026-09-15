@@ -23,23 +23,27 @@ if (app.Environment.IsDevelopment())
 
 //app.UseOutputCache();
 
-string[] summaries = ["Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"];
+//string[] summaries = ["Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"];
 
 var api = app.MapGroup("/api");
-api.MapGet("weatherforecast", () =>
+api.MapGet("restaurants", () =>
 {
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.CacheOutput(p => p.Expire(TimeSpan.FromSeconds(5)))
-.WithName("GetWeatherForecast");
+    return new[]
+    {
+        new Restaurant(1, "Spiced Villa", "North Indian", 4.5),
+        new Restaurant(2, "Tasty&Bites", "Italian", 4.2),
+        new Restaurant(3, "DelhiBelly", "Punjab", 4.7),
+        new Restaurant(4, "Kimchi", "Chinese", 4.3),
+        new Restaurant(5, "Gourmet", "Mediterranean", 4.6),
+        new Restaurant(6, "The Spice Route", "Indian", 4.4),
+        new Restaurant(7, "Pasta Paradise", "Italian", 4.1),
+        new Restaurant(8, "Taco Town", "Mexican", 4.8),
+        new Restaurant(9, "Wok & Roll", "Chinese", 4.0),
+        new Restaurant(10, "M Magic", "Mediterranean", 4.9),
+        new Restaurant(11, "Curry Corner", "Indian", 4.2),
+        new Restaurant(12, "Pizza Palace", "Italian", 4.5),
+    };
+}).WithName("GetRestaurants");
 
 app.MapDefaultEndpoints();
 
@@ -47,7 +51,5 @@ app.UseFileServer();
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+record Restaurant(int id, string name, string cuisine, double rating);
+
