@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="FoodExpress.AppHost/FoodExpress.AppHost.csproj" />
+  <Project Path="FoodExpress.Server/FoodExpress.Server.csproj" />
+  <Project Path="frontend/frontend.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+</Solution>
