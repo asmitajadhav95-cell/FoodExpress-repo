@@ -1,15 +1,23 @@
+using Azure.Messaging.ServiceBus;
+using Microsoft.AspNetCore.Builder;
+using System.Text.Json;
+using Microsoft.Extensions.DependencyInjection;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add service defaults & Aspire client integrations.
 builder.AddServiceDefaults();
+builder.AddAzureServiceBusClient("servicebus"); // reads the injected connection info and 
 //builder.AddRedisClientBuilder("cache")
-    //.WithOutputCache();
+//.WithOutputCache();
 
 // Add services to the container.
 builder.Services.AddProblemDetails();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddHostedService<OrderPlacedConsumer>();
 
 var app = builder.Build();
 
@@ -45,6 +53,20 @@ api.MapGet("restaurants", () =>
     };
 }).WithName("GetRestaurants");
 
+
+//Producer/Publisher
+api.MapPost("orders", async (OrderRequest request, ServiceBusClient serviceBusClient) =>
+{
+    var order = new Order(Guid.NewGuid(), request.RestaurantId, request.Items, "Placed");
+
+    var sender = serviceBusClient.CreateSender("orders");
+    var evt = new OrderPlaced(order.Id, order.RestaurantId, order.Items);
+    var message = new ServiceBusMessage(JsonSerializer.Serialize(evt)) { Subject = "OrderPlaced" };
+    await sender.SendMessageAsync(message);
+
+    return Results.Created($"/api/orders/{order.Id}", order);
+})
+.WithName("PlaceOrder");
 app.MapDefaultEndpoints();
 
 app.UseFileServer();
@@ -52,4 +74,62 @@ app.UseFileServer();
 app.Run();
 
 record Restaurant(int id, string name, string cuisine, double rating);
+
+record OrderRequest(int RestaurantId, List<string> Items);
+record Order(Guid Id, int RestaurantId, List<string> Items, string Status);
+record OrderPlaced(Guid OrderId, int RestaurantId, List<string> Items);
+
+
+class OrderPlacedConsumer(ServiceBusClient client, ILogger<OrderPlacedConsumer> logger) : BackgroundService
+{
+    private ServiceBusProcessor? _processor;
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        _processor = client.CreateProcessor("orders");
+        _processor.ProcessMessageAsync += async args =>
+        {
+            logger.LogInformation("Received OrderPlaced event: {Body}", args.Message.Body.ToString());
+            await args.CompleteMessageAsync(args.Message);
+        };
+        _processor.ProcessErrorAsync += args =>
+        {
+            logger.LogError(args.Exception, "Error processing Service Bus message");
+            return Task.CompletedTask;
+        };
+
+        await _processor.StartProcessingAsync(stoppingToken);
+    }
+    public override async Task StopAsync(CancellationToken cancellationToken)
+    {
+        if (_processor is not null)
+        {
+            await _processor.StopProcessingAsync(cancellationToken);
+        }
+        await base.StopAsync(cancellationToken);
+    }
+}
+
+namespace YourApp.Extensions
+{
+    public static class AzureServiceBusExtensions
+    {
+        // configKey is the configuration key that holds the Service Bus connection string
+        public static WebApplicationBuilder AddAzureServiceBusClient(this WebApplicationBuilder builder, string configKey)
+        {
+            var configuration = builder.Configuration;
+            var connectionString = configuration[configKey];
+
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                throw new InvalidOperationException($"Configuration value '{configKey}' for Service Bus connection string is missing.");
+            }
+
+            // Register ServiceBusClient as singleton
+            builder.Services.AddSingleton(new ServiceBusClient(connectionString));
+
+            return builder;
+        }
+    }
+}
 

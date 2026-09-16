@@ -58,6 +58,10 @@
               "version": "[13.5.3, )",
               "autoReferenced": true
             },
+            "Aspire.Hosting.Azure.ServiceBus": {
+              "target": "Package",
+              "version": "[13.5.4, )"
+            },
             "Aspire.Hosting.JavaScript": {
               "target": "Package",
               "version": "[13.5.3, )"

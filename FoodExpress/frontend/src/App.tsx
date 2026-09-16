@@ -35,6 +35,25 @@ function App() {
         }
     };
 
+
+    const placeOrder = async (restaurantId: number) => {
+        try {
+            const response = await fetch('/api/orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ restaurantId, items: ['Sample Item 1', 'Sample Item 2'] }),
+            });
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const order = await response.json();
+            alert(`Order placed! Order ID: ${order.id}`);
+        } catch (err) {
+            alert('Failed to place order: ' + (err instanceof Error ? err.message : 'unknown error'));
+        }
+    };
+
+
+
+
     useEffect(() => {
         fetchRestaurants();
     }, []);
@@ -93,8 +112,15 @@ function App() {
                     <div className="weather-temps">
                       <div className="temp-group">
                         <span className="temp-value">★ {r.rating.toFixed(1)}</span>
-                      </div>
-                    </div>
+                            </div>
+                        </div>
+                        <button
+                            className="refresh-button"
+                            onClick={() => placeOrder(r.id)}
+                            type="button"
+                        >
+                            Order Now
+                        </button>
                   </article>
                 ))}
               </div>

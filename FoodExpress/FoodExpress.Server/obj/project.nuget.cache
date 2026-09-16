@@ -1,15 +1,23 @@
 {
   "version": 2,
-  "dgSpecHash": "5NuE6G7fRpA=",
+  "dgSpecHash": "OL4rqVpz9hg=",
   "success": true,
   "projectFilePath": "C:\\Users\\Dell\\OneDrive\\Desktop\\FoodDeliveryApp\\FoodExpress-repo\\FoodExpress\\FoodExpress.Server\\FoodExpress.Server.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\Dell\\.nuget\\packages\\aspire.azure.messaging.servicebus\\13.5.4\\aspire.azure.messaging.servicebus.13.5.4.nupkg.sha512",
     "C:\\Users\\Dell\\.nuget\\packages\\aspire.stackexchange.redis\\13.5.3\\aspire.stackexchange.redis.13.5.3.nupkg.sha512",
     "C:\\Users\\Dell\\.nuget\\packages\\aspire.stackexchange.redis.outputcaching\\13.5.3\\aspire.stackexchange.redis.outputcaching.13.5.3.nupkg.sha512",
+    "C:\\Users\\Dell\\.nuget\\packages\\aspnetcore.healthchecks.azureservicebus\\9.0.0\\aspnetcore.healthchecks.azureservicebus.9.0.0.nupkg.sha512",
     "C:\\Users\\Dell\\.nuget\\packages\\aspnetcore.healthchecks.redis\\9.0.0\\aspnetcore.healthchecks.redis.9.0.0.nupkg.sha512",
+    "C:\\Users\\Dell\\.nuget\\packages\\azure.core\\1.57.0\\azure.core.1.57.0.nupkg.sha512",
+    "C:\\Users\\Dell\\.nuget\\packages\\azure.core.amqp\\1.3.1\\azure.core.amqp.1.3.1.nupkg.sha512",
+    "C:\\Users\\Dell\\.nuget\\packages\\azure.messaging.servicebus\\7.20.1\\azure.messaging.servicebus.7.20.1.nupkg.sha512",
     "C:\\Users\\Dell\\.nuget\\packages\\microsoft.aspnetcore.openapi\\10.0.11\\microsoft.aspnetcore.openapi.10.0.11.nupkg.sha512",
     "C:\\Users\\Dell\\.nuget\\packages\\microsoft.aspnetcore.outputcaching.stackexchangeredis\\10.0.11\\microsoft.aspnetcore.outputcaching.stackexchangeredis.10.0.11.nupkg.sha512",
+    "C:\\Users\\Dell\\.nuget\\packages\\microsoft.azure.amqp\\2.7.0\\microsoft.azure.amqp.2.7.0.nupkg.sha512",
+    "C:\\Users\\Dell\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\10.0.3\\microsoft.bcl.asyncinterfaces.10.0.3.nupkg.sha512",
     "C:\\Users\\Dell\\.nuget\\packages\\microsoft.extensions.ambientmetadata.application\\10.8.0\\microsoft.extensions.ambientmetadata.application.10.8.0.nupkg.sha512",
+    "C:\\Users\\Dell\\.nuget\\packages\\microsoft.extensions.azure\\1.14.0\\microsoft.extensions.azure.1.14.0.nupkg.sha512",
     "C:\\Users\\Dell\\.nuget\\packages\\microsoft.extensions.compliance.abstractions\\10.8.0\\microsoft.extensions.compliance.abstractions.10.8.0.nupkg.sha512",
     "C:\\Users\\Dell\\.nuget\\packages\\microsoft.extensions.dependencyinjection.autoactivation\\10.8.0\\microsoft.extensions.dependencyinjection.autoactivation.10.8.0.nupkg.sha512",
     "C:\\Users\\Dell\\.nuget\\packages\\microsoft.extensions.diagnostics.exceptionsummarization\\10.8.0\\microsoft.extensions.diagnostics.exceptionsummarization.10.8.0.nupkg.sha512",
@@ -20,6 +28,9 @@
     "C:\\Users\\Dell\\.nuget\\packages\\microsoft.extensions.servicediscovery.abstractions\\10.8.0\\microsoft.extensions.servicediscovery.abstractions.10.8.0.nupkg.sha512",
     "C:\\Users\\Dell\\.nuget\\packages\\microsoft.extensions.telemetry\\10.8.0\\microsoft.extensions.telemetry.10.8.0.nupkg.sha512",
     "C:\\Users\\Dell\\.nuget\\packages\\microsoft.extensions.telemetry.abstractions\\10.8.0\\microsoft.extensions.telemetry.abstractions.10.8.0.nupkg.sha512",
+    "C:\\Users\\Dell\\.nuget\\packages\\microsoft.identity.client\\4.83.1\\microsoft.identity.client.4.83.1.nupkg.sha512",
+    "C:\\Users\\Dell\\.nuget\\packages\\microsoft.identity.client.extensions.msal\\4.83.1\\microsoft.identity.client.extensions.msal.4.83.1.nupkg.sha512",
+    "C:\\Users\\Dell\\.nuget\\packages\\microsoft.identitymodel.abstractions\\8.14.0\\microsoft.identitymodel.abstractions.8.14.0.nupkg.sha512",
     "C:\\Users\\Dell\\.nuget\\packages\\microsoft.openapi\\2.7.5\\microsoft.openapi.2.7.5.nupkg.sha512",
     "C:\\Users\\Dell\\.nuget\\packages\\opentelemetry\\1.15.3\\opentelemetry.1.15.3.nupkg.sha512",
     "C:\\Users\\Dell\\.nuget\\packages\\opentelemetry.api\\1.15.3\\opentelemetry.api.1.15.3.nupkg.sha512",
@@ -34,7 +45,10 @@
     "C:\\Users\\Dell\\.nuget\\packages\\polly.extensions\\8.4.2\\polly.extensions.8.4.2.nupkg.sha512",
     "C:\\Users\\Dell\\.nuget\\packages\\polly.ratelimiting\\8.4.2\\polly.ratelimiting.8.4.2.nupkg.sha512",
     "C:\\Users\\Dell\\.nuget\\packages\\stackexchange.redis\\2.13.1\\stackexchange.redis.2.13.1.nupkg.sha512",
-    "C:\\Users\\Dell\\.nuget\\packages\\system.io.hashing\\10.0.8\\system.io.hashing.10.0.8.nupkg.sha512"
+    "C:\\Users\\Dell\\.nuget\\packages\\system.clientmodel\\1.13.0\\system.clientmodel.1.13.0.nupkg.sha512",
+    "C:\\Users\\Dell\\.nuget\\packages\\system.io.hashing\\10.0.8\\system.io.hashing.10.0.8.nupkg.sha512",
+    "C:\\Users\\Dell\\.nuget\\packages\\system.memory.data\\10.0.3\\system.memory.data.10.0.3.nupkg.sha512",
+    "C:\\Users\\Dell\\.nuget\\packages\\system.security.cryptography.protecteddata\\4.5.0\\system.security.cryptography.protecteddata.4.5.0.nupkg.sha512"
   ],
   "logs": []
 }
