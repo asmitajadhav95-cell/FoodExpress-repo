@@ -5,9 +5,18 @@ var builder = DistributedApplication.CreateBuilder(args);
 //and tells Aspire to run it as a local Docker container instead of a real Azure resource.
 var serviceBus = builder.AddAzureServiceBus("servicebus").RunAsEmulator();
 
-//declares the orders queue inside that namespace, as code (this is your infrastructure-as-code for messaging,
+//declares the orders queue inside that namespace, as code (this is your infrastructure-as-code for messaging),
+//your orders queue works fine for OrderPlaced because only one consumer needs to react to it.
 var ordersQueue = serviceBus.AddServiceBusQueue("orders");
 
+//implement OrderCancelled using a Topic instead of a Queue.OrderCancelled is your headline scenario —
+//it needs three independent reactions (refund, reassignment, notification), and a queue can't do that;
+//only one listener would ever get each message.
+//So this is where you actually need Azure Service Bus's Topic + Subscriptions model,
+var orderEventsTopic = serviceBus.AddServiceBusTopic("order-events");
+var paymentSub = orderEventsTopic.AddServiceBusSubscription("payment-sub");
+var deliverySub = orderEventsTopic.AddServiceBusSubscription("delivery-sub");
+var notificationSub = orderEventsTopic.AddServiceBusSubscription("notification-sub");
 
 
 ////This tells Aspire to spin up a local Service Bus emulator 

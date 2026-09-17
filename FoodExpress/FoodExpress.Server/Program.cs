@@ -16,8 +16,9 @@ builder.Services.AddProblemDetails();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-
-builder.Services.AddHostedService<OrderPlacedConsumer>();
+builder.Services.AddHostedService<PaymentSubscriptionConsumer>();
+builder.Services.AddHostedService<DeliverySubscriptionConsumer>();
+builder.Services.AddHostedService<NotificationSubscriptionConsumer>();
 
 var app = builder.Build();
 
@@ -67,6 +68,19 @@ api.MapPost("orders", async (OrderRequest request, ServiceBusClient serviceBusCl
     return Results.Created($"/api/orders/{order.Id}", order);
 })
 .WithName("PlaceOrder");
+
+api.MapPost("orders/{id}/cancel", async (Guid id, ServiceBusClient serviceBusClient) =>
+{
+    var sender = serviceBusClient.CreateSender("order-events");
+    var evt = new OrderCancelled(id);
+    var message = new ServiceBusMessage(JsonSerializer.Serialize(evt)) { Subject = "OrderCancelled" };
+    await sender.SendMessageAsync(message);
+
+    return Results.Ok(new { message = "Order cancellation event published", orderId = id });
+})
+.WithName("CancelOrder");
+
+
 app.MapDefaultEndpoints();
 
 app.UseFileServer();
@@ -110,6 +124,89 @@ class OrderPlacedConsumer(ServiceBusClient client, ILogger<OrderPlacedConsumer> 
     }
 }
 
+
+record OrderCancelled(Guid OrderId);
+
+class PaymentSubscriptionConsumer(ServiceBusClient client, ILogger<PaymentSubscriptionConsumer> logger) : BackgroundService
+{
+    private ServiceBusProcessor? _processor;
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        _processor = client.CreateProcessor("order-events", "payment-sub");
+        _processor.ProcessMessageAsync += async args =>
+        {
+            logger.LogInformation("[Payment] Received OrderCancelled event: {Body}", args.Message.Body.ToString());
+            await args.CompleteMessageAsync(args.Message);
+        };
+        _processor.ProcessErrorAsync += args =>
+        {
+            logger.LogError(args.Exception, "[Payment] Error processing message");
+            return Task.CompletedTask;
+        };
+        await _processor.StartProcessingAsync(stoppingToken);
+    }
+
+    public override async Task StopAsync(CancellationToken cancellationToken)
+    {
+        if (_processor is not null) await _processor.StopProcessingAsync(cancellationToken);
+        await base.StopAsync(cancellationToken);
+    }
+}
+
+class DeliverySubscriptionConsumer(ServiceBusClient client, ILogger<DeliverySubscriptionConsumer> logger) : BackgroundService
+{
+    private ServiceBusProcessor? _processor;
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        _processor = client.CreateProcessor("order-events", "delivery-sub");
+        _processor.ProcessMessageAsync += async args =>
+        {
+            logger.LogInformation("[Delivery] Received OrderCancelled event: {Body}", args.Message.Body.ToString());
+            await args.CompleteMessageAsync(args.Message);
+        };
+        _processor.ProcessErrorAsync += args =>
+        {
+            logger.LogError(args.Exception, "[Delivery] Error processing message");
+            return Task.CompletedTask;
+        };
+        await _processor.StartProcessingAsync(stoppingToken);
+    }
+
+    public override async Task StopAsync(CancellationToken cancellationToken)
+    {
+        if (_processor is not null) await _processor.StopProcessingAsync(cancellationToken);
+        await base.StopAsync(cancellationToken);
+    }
+}
+
+class NotificationSubscriptionConsumer(ServiceBusClient client, ILogger<NotificationSubscriptionConsumer> logger) : BackgroundService
+{
+    private ServiceBusProcessor? _processor;
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        _processor = client.CreateProcessor("order-events", "notification-sub");
+        _processor.ProcessMessageAsync += async args =>
+        {
+            logger.LogInformation("[Notification] Received OrderCancelled event: {Body}", args.Message.Body.ToString());
+            await args.CompleteMessageAsync(args.Message);
+        };
+        _processor.ProcessErrorAsync += args =>
+        {
+            logger.LogError(args.Exception, "[Notification] Error processing message");
+            return Task.CompletedTask;
+        };
+        await _processor.StartProcessingAsync(stoppingToken);
+    }
+
+    public override async Task StopAsync(CancellationToken cancellationToken)
+    {
+        if (_processor is not null) await _processor.StopProcessingAsync(cancellationToken);
+        await base.StopAsync(cancellationToken);
+    }
+}
 namespace YourApp.Extensions
 {
     public static class AzureServiceBusExtensions
