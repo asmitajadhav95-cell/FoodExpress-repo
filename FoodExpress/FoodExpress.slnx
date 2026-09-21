@@ -1,6 +1,9 @@
 <Solution>
   <Project Path="FoodExpress.AppHost/FoodExpress.AppHost.csproj" />
   <Project Path="FoodExpress.Server/FoodExpress.Server.csproj" />
+  <Project Path="FoodExpress.Services.Delivery/FoodExpress.Services.Delivery.csproj" />
+  <Project Path="FoodExpress.Services.Notification/FoodExpress.Services.Notification.csproj" />
+  <Project Path="FoodExpress.Services.Payment/FoodExpress.Services.Payment.csproj" />
   <Project Path="frontend/frontend.esproj">
     <Build />
     <Deploy />

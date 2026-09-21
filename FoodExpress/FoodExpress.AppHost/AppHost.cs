@@ -29,12 +29,22 @@ var server = builder.AddProject<Projects.FoodExpress_Server>("server") //Server 
     .WithHttpHealthCheck("/health")
     .WithExternalHttpEndpoints();
 
+var paymentService = builder.AddProject<Projects.FoodExpress_Services_Payment>("payment-service")
+    .WithReference(serviceBus)
+    .WaitFor(serviceBus);
+
+var deliveryService = builder.AddProject<Projects.FoodExpress_Services_Delivery>("delivery-service")
+    .WithReference(serviceBus)
+    .WaitFor(serviceBus);
+
+var notificationService = builder.AddProject<Projects.FoodExpress_Services_Notification>("notification-service")
+    .WithReference(serviceBus)
+    .WaitFor(serviceBus);
+
 var webfrontend = builder.AddViteApp("webfrontend", "../frontend")
     .WithReference(server)
     .WaitFor(server);
 
 server.PublishWithContainerFiles(webfrontend, "wwwroot");
-
-
 
 builder.Build().Run();

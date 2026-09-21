@@ -137,6 +137,9 @@ C:\Users\Dell\OneDrive\Desktop\FoodDeliveryApp\FoodExpress-repo\FoodExpress\Food
 C:\Users\Dell\OneDrive\Desktop\FoodDeliveryApp\FoodExpress-repo\FoodExpress\FoodExpress.AppHost\obj\Debug\net10.0\FoodExpress.AppHost.AssemblyInfo.cs
 C:\Users\Dell\OneDrive\Desktop\FoodDeliveryApp\FoodExpress-repo\FoodExpress\FoodExpress.AppHost\obj\Debug\net10.0\FoodExpress.AppHost.csproj.CoreCompileInputs.cache
 C:\Users\Dell\OneDrive\Desktop\FoodDeliveryApp\FoodExpress-repo\FoodExpress\FoodExpress.AppHost\obj\Debug\net10.0\Aspire\references\FoodExpress_Server.ProjectMetadata.g.cs
+C:\Users\Dell\OneDrive\Desktop\FoodDeliveryApp\FoodExpress-repo\FoodExpress\FoodExpress.AppHost\obj\Debug\net10.0\Aspire\references\FoodExpress_Services_Delivery.ProjectMetadata.g.cs
+C:\Users\Dell\OneDrive\Desktop\FoodDeliveryApp\FoodExpress-repo\FoodExpress\FoodExpress.AppHost\obj\Debug\net10.0\Aspire\references\FoodExpress_Services_Notification.ProjectMetadata.g.cs
+C:\Users\Dell\OneDrive\Desktop\FoodDeliveryApp\FoodExpress-repo\FoodExpress\FoodExpress.AppHost\obj\Debug\net10.0\Aspire\references\FoodExpress_Services_Payment.ProjectMetadata.g.cs
 C:\Users\Dell\OneDrive\Desktop\FoodDeliveryApp\FoodExpress-repo\FoodExpress\FoodExpress.AppHost\obj\Debug\net10.0\Aspire\references\_AppHost.ProjectMetadata.g.cs
 C:\Users\Dell\OneDrive\Desktop\FoodDeliveryApp\FoodExpress-repo\FoodExpress\FoodExpress.AppHost\obj\Debug\net10.0\FoodExpress.AppHost.sourcelink.json
 C:\Users\Dell\OneDrive\Desktop\FoodDeliveryApp\FoodExpress-repo\FoodExpress\FoodExpress.AppHost\obj\Debug\net10.0\FoodExpr.EDDA0DB8.Up2Date

@@ -25,7 +25,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FoodExpress.AppHost")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+315d8fa24dfad104b1ec27ab5a1c87235d716e9a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+67a4a504f0e5b8087662a09a605ee0bad400300e")]
 [assembly: System.Reflection.AssemblyProductAttribute("FoodExpress.AppHost")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FoodExpress.AppHost")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
