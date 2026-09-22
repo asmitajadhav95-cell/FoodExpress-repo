@@ -1,7 +1,8 @@
 using Azure.Messaging.ServiceBus;
+using FoodExpress.Server;
 using Microsoft.AspNetCore.Builder;
-using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +20,15 @@ builder.Services.AddOpenApi();
 //builder.Services.AddHostedService<DeliverySubscriptionConsumer>();
 //builder.Services.AddHostedService<NotificationSubscriptionConsumer>();
 
+builder.AddSqlServerDbContext<OrdersDbContext>("ordersdb");
+
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<OrdersDbContext>();
+    await db.Database.EnsureCreatedAsync();
+}
 
 // Configure the HTTP request pipeline.
 app.UseExceptionHandler();
@@ -55,27 +64,44 @@ api.MapGet("restaurants", () =>
 
 
 //Producer/Publisher
-api.MapPost("orders", async (OrderRequest request, ServiceBusClient serviceBusClient) =>
+api.MapPost("orders", async (OrderRequest request, ServiceBusClient serviceBusClient, OrdersDbContext db) =>
 {
-    var order = new Order(Guid.NewGuid(), request.RestaurantId, request.Items, "Placed");
+    var entity = new FoodExpress.Server.OrderEntity
+    {
+        Id = Guid.NewGuid(),
+        RestaurantId = request.RestaurantId,
+        ItemsJson = JsonSerializer.Serialize(request.Items),
+        Status = "Placed"
+    };
+    db.Orders.Add(entity);
+    await db.SaveChangesAsync();
 
     var sender = serviceBusClient.CreateSender("orders");
-    var evt = new OrderPlaced(order.Id, order.RestaurantId, order.Items);
+    var evt = new OrderPlaced(entity.Id, entity.RestaurantId, request.Items);
     var message = new ServiceBusMessage(JsonSerializer.Serialize(evt)) { Subject = "OrderPlaced" };
     await sender.SendMessageAsync(message);
 
-    return Results.Created($"/api/orders/{order.Id}", order);
+    return Results.Created($"/api/orders/{entity.Id}", entity);
 })
 .WithName("PlaceOrder");
 
-api.MapPost("orders/{id}/cancel", async (Guid id, ServiceBusClient serviceBusClient) =>
+api.MapPost("orders/{id}/cancel", async (Guid id, ServiceBusClient serviceBusClient, OrdersDbContext db) =>
 {
+    var order = await db.Orders.FindAsync(id);
+    if (order is null)
+    {
+        return Results.NotFound(new { message = $"Order {id} not found" });
+    }
+
+    order.Status = "Cancelled";
+    await db.SaveChangesAsync();
+
     var sender = serviceBusClient.CreateSender("order-events");
     var evt = new OrderCancelled(id);
     var message = new ServiceBusMessage(JsonSerializer.Serialize(evt)) { Subject = "OrderCancelled" };
     await sender.SendMessageAsync(message);
 
-    return Results.Ok(new { message = "Order cancellation event published", orderId = id });
+    return Results.Ok(new { message = $"Order {id} cancellation event published", orderId = id });
 })
 .WithName("CancelOrder");
 
@@ -201,4 +227,6 @@ namespace YourApp.Extensions
         }
     }
 }
+
+
 

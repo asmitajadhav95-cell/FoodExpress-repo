@@ -1,50 +1,71 @@
-var builder = DistributedApplication.CreateBuilder(args);
+using System;
 
-//var cache = builder.AddRedis("cache");
-//declares "there is a Service Bus namespace called servicebus,"
-//and tells Aspire to run it as a local Docker container instead of a real Azure resource.
-var serviceBus = builder.AddAzureServiceBus("servicebus").RunAsEmulator();
+// (keep any existing using directives you already have)
 
-//declares the orders queue inside that namespace, as code (this is your infrastructure-as-code for messaging),
-//your orders queue works fine for OrderPlaced because only one consumer needs to react to it.
-var ordersQueue = serviceBus.AddServiceBusQueue("orders");
+namespace FoodExpress.AppHost
+{
+    internal static class Program
+    {
+        public static int Main(string[] args)
+        {
+            var builder = DistributedApplication.CreateBuilder(args);
 
-//implement OrderCancelled using a Topic instead of a Queue.OrderCancelled is your headline scenario —
-//it needs three independent reactions (refund, reassignment, notification), and a queue can't do that;
-//only one listener would ever get each message.
-//So this is where you actually need Azure Service Bus's Topic + Subscriptions model,
-var orderEventsTopic = serviceBus.AddServiceBusTopic("order-events");
-var paymentSub = orderEventsTopic.AddServiceBusSubscription("payment-sub");
-var deliverySub = orderEventsTopic.AddServiceBusSubscription("delivery-sub");
-var notificationSub = orderEventsTopic.AddServiceBusSubscription("notification-sub");
+            //var cache = builder.AddRedis("cache");
+            //declares "there is a Service Bus namespace called servicebus,"
+            //and tells Aspire to run it as a local Docker container instead of a real Azure resource.
+            var serviceBus = builder.AddAzureServiceBus("servicebus").RunAsEmulator();
 
+            var sql = builder.AddSqlServer("sql").WithDataVolume();
+            var ordersDb = sql.AddDatabase("ordersdb");
 
-////This tells Aspire to spin up a local Service Bus emulator 
-///(Docker-based — you'll need Docker Desktop running for this one,
-///unlike the Redis case we skipped) and inject the connection info into FoodExpress.Server automatically.
+            //declares the orders queue inside that namespace, as code (this is your infrastructure-as-code for messaging),
+            //your orders queue works fine for OrderPlaced because only one consumer needs to react to it.
+            var ordersQueue = serviceBus.AddServiceBusQueue("orders");
 
-var server = builder.AddProject<Projects.FoodExpress_Server>("server") //Server project registration injects the connection info into FoodExpress.Server's configuration automatically
-    .WithReference(serviceBus) //
-    .WaitFor(serviceBus)  //tells Aspire "don't start server until servicebus is up."
-    .WithHttpHealthCheck("/health")
-    .WithExternalHttpEndpoints();
+            //implement OrderCancelled using a Topic instead of a Queue.OrderCancelled is your headline scenario —
+            //it needs three independent reactions (refund, reassignment, notification), and a queue can't do that;
+            //only one listener would ever get each message.
+            //So this is where you actually need Azure Service Bus's Topic + Subscriptions model,
+            var orderEventsTopic = serviceBus.AddServiceBusTopic("order-events");
+            var paymentSub = orderEventsTopic.AddServiceBusSubscription("payment-sub");
+            var deliverySub = orderEventsTopic.AddServiceBusSubscription("delivery-sub");
+            var notificationSub = orderEventsTopic.AddServiceBusSubscription("notification-sub");
 
-var paymentService = builder.AddProject<Projects.FoodExpress_Services_Payment>("payment-service")
-    .WithReference(serviceBus)
-    .WaitFor(serviceBus);
+            ////This tells Aspire to spin up a local Service Bus emulator 
+            ///(Docker-based — you'll need Docker Desktop running for this one,
+            ///unlike the Redis case we skipped) and inject the connection info into FoodExpress.Server automatically.
 
-var deliveryService = builder.AddProject<Projects.FoodExpress_Services_Delivery>("delivery-service")
-    .WithReference(serviceBus)
-    .WaitFor(serviceBus);
+            var server = builder.AddProject<Projects.FoodExpress_Server>("server")
+                 .WithReference(serviceBus)
+                 .WaitFor(serviceBus)
+                 .WithReference(ordersDb)
+                 .WaitFor(ordersDb)
+                 .WithHttpHealthCheck("/health")
+                 .WithExternalHttpEndpoints();
 
-var notificationService = builder.AddProject<Projects.FoodExpress_Services_Notification>("notification-service")
-    .WithReference(serviceBus)
-    .WaitFor(serviceBus);
+            var paymentService = builder.AddProject<Projects.FoodExpress_Services_Payment>("payment-service")
+                .WithReference(serviceBus)
+                .WaitFor(serviceBus);
 
-var webfrontend = builder.AddViteApp("webfrontend", "../frontend")
-    .WithReference(server)
-    .WaitFor(server);
+            var deliveryService = builder.AddProject<Projects.FoodExpress_Services_Delivery>("delivery-service")
+                .WithReference(serviceBus)
+                .WaitFor(serviceBus);
 
-server.PublishWithContainerFiles(webfrontend, "wwwroot");
+            var notificationService = builder.AddProject<Projects.FoodExpress_Services_Notification>("notification-service")
+                .WithReference(serviceBus)
+                .WaitFor(serviceBus);
 
-builder.Build().Run();
+          
+
+            var webfrontend = builder.AddViteApp("webfrontend", "../frontend")
+                .WithReference(server)
+                .WaitFor(server);
+
+            server.PublishWithContainerFiles(webfrontend, "wwwroot");
+
+            builder.Build().Run();
+
+            return 0;
+        }
+    }
+}
