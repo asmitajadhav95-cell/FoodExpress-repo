@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FoodExpress.Server\FoodExpress.Server.csproj" />
+    <ProjectReference Include="..\FoodExpress.Services.Billing\FoodExpress.Services.Billing.csproj" />
     <ProjectReference Include="..\FoodExpress.Services.Delivery\FoodExpress.Services.Delivery.csproj" />
     <ProjectReference Include="..\FoodExpress.Services.Notification\FoodExpress.Services.Notification.csproj" />
     <ProjectReference Include="..\FoodExpress.Services.Payment\FoodExpress.Services.Payment.csproj" />

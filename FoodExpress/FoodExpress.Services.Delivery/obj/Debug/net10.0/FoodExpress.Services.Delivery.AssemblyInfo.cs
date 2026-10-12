@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FoodExpress.Services.Delivery")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+67a4a504f0e5b8087662a09a605ee0bad400300e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ba71f28e1cacbb2c0a80a5ff89b93e60ab173313")]
 [assembly: System.Reflection.AssemblyProductAttribute("FoodExpress.Services.Delivery")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FoodExpress.Services.Delivery")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

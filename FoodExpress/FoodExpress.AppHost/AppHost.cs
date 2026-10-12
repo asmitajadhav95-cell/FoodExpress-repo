@@ -30,6 +30,9 @@ namespace FoodExpress.AppHost
             var paymentSub = orderEventsTopic.AddServiceBusSubscription("payment-sub");
             var deliverySub = orderEventsTopic.AddServiceBusSubscription("delivery-sub");
             var notificationSub = orderEventsTopic.AddServiceBusSubscription("notification-sub");
+            var subscriptionEventsTopic = serviceBus.AddServiceBusTopic("subscription-events");
+            var billingSub = subscriptionEventsTopic.AddServiceBusSubscription("billing-sub");
+            var subNotificationSub = subscriptionEventsTopic.AddServiceBusSubscription("sub-notification-sub");
 
             ////This tells Aspire to spin up a local Service Bus emulator 
             ///(Docker-based — you'll need Docker Desktop running for this one,
@@ -55,7 +58,11 @@ namespace FoodExpress.AppHost
                 .WithReference(serviceBus)
                 .WaitFor(serviceBus);
 
-          
+            var billingService = builder.AddProject<Projects.FoodExpress_Services_Billing>("billing-service")
+                .WithReference(serviceBus)
+                .WaitFor(serviceBus);
+
+
 
             var webfrontend = builder.AddViteApp("webfrontend", "../frontend")
                 .WithReference(server)

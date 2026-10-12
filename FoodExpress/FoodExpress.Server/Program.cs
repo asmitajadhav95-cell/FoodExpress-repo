@@ -106,6 +106,32 @@ api.MapPost("orders/{id}/cancel", async (Guid id, ServiceBusClient serviceBusCli
 .WithName("CancelOrder");
 
 
+api.MapPost("subscriptions", async (OrdersDbContext db) =>
+{
+    var entity = new SubscriptionEntity { Id = Guid.NewGuid(), PlanName = "Monthly", Status = "Active" };
+    db.Subscriptions.Add(entity);
+    await db.SaveChangesAsync();
+    return Results.Created($"/api/subscriptions/{entity.Id}", entity);
+}).WithName("CreateSubscription");
+
+api.MapPost("subscriptions/{id}/cancel", async (Guid id, ServiceBusClient serviceBusClient, OrdersDbContext db) =>
+{
+    var subscription = await db.Subscriptions.FindAsync(id);
+    if (subscription is null) return Results.NotFound(new { message = $"Subscription {id} not found" });
+
+    subscription.Status = "Cancelled";
+    await db.SaveChangesAsync();
+
+    var sender = serviceBusClient.CreateSender("subscription-events");
+    var evt = new SubscriptionCancelled(id);
+    var message = new ServiceBusMessage(JsonSerializer.Serialize(evt)) { Subject = "SubscriptionCancelled" };
+    await sender.SendMessageAsync(message);
+
+    return Results.Ok(new { message = $"Subscription {id} cancellation event published", subscriptionId = id });
+}).WithName("CancelSubscription");
+
+
+
 app.MapDefaultEndpoints();
 
 app.UseFileServer();
@@ -117,6 +143,7 @@ record Restaurant(int id, string name, string cuisine, double rating);
 record OrderRequest(int RestaurantId, List<string> Items);
 record Order(Guid Id, int RestaurantId, List<string> Items, string Status);
 record OrderPlaced(Guid OrderId, int RestaurantId, List<string> Items);
+public record SubscriptionCancelled(Guid SubscriptionId);
 
 
 class OrderPlacedConsumer(ServiceBusClient client, ILogger<OrderPlacedConsumer> logger) : BackgroundService
